@@ -3,17 +3,18 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Document</title>
+    <title>Guess the Word</title>
     <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
   </head>
   <body>
 
     <div id="app">
 
-    <h1>Game of Words</h1>
+    <h1>Guess the Word</h1>
 
     <button @click="getAnswer">Get definition</button>
-    <h6>Definition: {{answer}}</h6> 
+    <h6>Definition: {{kuvaus}}</h6> 
+    <h6>sdfsf</h6>
 
 
     </div>
@@ -23,51 +24,34 @@
       var app = new Vue
       ({
           el: "#app",
+          data: {
+            kuvaus:[], //array
+            axios_url_start: "https://dictionaryapi.com/api/v3/references/learners/json/",
+            sana: "cat",
+            axios_url_end: "?key=5375d6d8-6ba2-4831-b6e0-e1660a4c076d",
+            url: this.axios_url_start + this.sana + this.axios_url_end,
+            },
           methods: {
               getAnswer: function () {
-                  // axios tarjoaa toiminnallisuuden ja get hakee dataa
-                  // tällä voi tehdä ajax-kutsuja
-                  // alla olevalla esimerkillä voi suoraan hakea rest api -juttuja. Kopioi suoraan ja liitä vaan uusi osoite.
-                    axios.get('https://od-api.oxforddictionaries.com/api/v2/', {headers: {
-                        'app_id': '906c12be',
-                        'app_key': '2e8b928cad19f1b689874fa541eae756'
-                    }})
+                console.log("osoite: " + this.axios_url_start + this.sana + this.axios_url_end);
+                    axios.get(this.axios_url_start + this.sana + this.axios_url_end)
                       .then(function (response) {
                           app.answer = response.data.answer;
+                          console.log(response.data);
+                    //ilman this. alkua muuttujilla on vain metodin sisäinen skooppi
+                          this.kuvaus.push(response.data[0].shortdef);
+                          console.log("kuvaus: " + kuvaus)
                       })
                       .catch(function (error) {
-                          app.answer = 'Error! Could not reach the API. ' + error;
+                          app.answer = 'Error! ' + error;
+                          console.log(app.answer);
                       })
                 }
             }
         
         });
 
-        // app_id  = "906c12be";
-        // app_key  = "2e8b928cad19f1b689874fa541eae756";
-        // endpoint = "entries";
-        // language_code = "en-us";
-        // word_id = "example";
-        // url = "https://od-api.oxforddictionaries.com/api/v2/" + endpoint + "/" + language_code + "/" + word_id.toLowerCase();
-
-
-        // r = requests.get(url, headers = {"app_id": app_id, "app_key": app_key})
-        // print("code {}\n".format(r.status_code))
-        // print("text \n" + r.text)
-        // print("json \n" + json.dumps(r.json()))
-
-
-
-        // var Dictionary = require("https://od-api.oxforddictionaries.com/api/v2");
-        // var app_id = "906c12be";
-        // var app_key = "2e8b928cad19f1b689874fa541eae756";
-        // var dict = new Dictionary(app_id, app_key);
-        // dict.filter("bird",function(error,data){
-        //     if(error) 
-        //     return console.log(error); console.log(data); 
-        // });
-
-
+       
         //axioksen source
     </script>
     <script src="https://cdn.jsdelivr.net/npm/axios@0.12.0/dist/axios.min.js"></script>
