@@ -3193,7 +3193,6 @@ jade
 jaguar
 jail
 jailhouse
-jalapeÃ±o
 jam
 jar
 jasmine

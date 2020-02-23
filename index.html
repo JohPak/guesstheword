@@ -1,32 +1,46 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Guess the Word</title>
-    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
-  </head>
-  <body>
-    <div id="app">
-      <h1>Guess the Word</h1>
-      <p>The aim is to guess the word by its definition.</p>
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Guess the Word</title>
+        <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+        <!-- Siirretty Axios ja Ajax sivun lopusta tänne ylös (muuten mounted-metodit ei toimineet) -->
+        <script src="https://cdn.jsdelivr.net/npm/axios@0.12.0/dist/axios.min.js"></script>
+        <script
+          src="https://code.jquery.com/jquery-3.4.1.min.js"
+          integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo="
+          crossorigin="anonymous"></script>
+    </head>
+    <body>
+        <div id="app">
+            <h1>Guess the Word</h1>
+            <p>The aim is to guess the word by its definition.</p>
+            
+            <!-- <div v-html="sanalista[0]" class="app"></div> -->
+            
+            <button @click="pickRandomWord">Draw new word</button>
+            <br><br>
+            <div>
+                (the word has {{searchword.length}} letters)
+            </div><br>
+            <div>
+                {{definitionlist[0]}}
+                {{definitionlist[1]}}
+                {{definitionlist[3]}}
+            </div>
 
-      <!-- <div v-html="sanalista[0]" class="app"></div> -->
-
-      <button @click="getDefinition">Get definition</button>
-      <button @click="getRandomWord">Get word</button>
-      <button @click="pickRandomWord">pick</button>
-      <h6>Definition:</h6>
-    </div>
-
+        </div>
+        
     <script>
       var app = new Vue({
         el: "#app",
         data: {
           sanalista: [],
+          definitionlist: [],
           axios_url_start:
             "https://dictionaryapi.com/api/v3/references/learners/json/",
-          searchword: "sheep",
+          searchword: "",
           axios_url_end: "?key=5375d6d8-6ba2-4831-b6e0-e1660a4c076d"
         },
         methods: {
@@ -36,7 +50,11 @@
               .then(function(response) {
                 app.answer = response.data.answer;
                 console.log(response.data);
-              })
+                for (let i = 0; i < response.data[0].shortdef.length; i++) {
+                    this.definitionlist.push(response.data[0].shortdef[i]);
+                }
+                console.log(this.definitionlist);
+              }.bind(this))
               .catch(function(error) {
                 app.answer = "Error! " + error;
                 console.log(app.answer);
@@ -55,6 +73,7 @@
                 }
                 console.log(lines.length + " sanaa lisätty listaan");
               }.bind(this) // bindin avulla pääsi eroon "sanalista not defined" -herjasta. Nyt sanalista sisältää tiedoston sanat!!
+              
             });
           }, 
 
@@ -62,20 +81,19 @@
                 // arpoo satunnaisen sanan listasta
                 this.searchword = this.sanalista[Math.floor(Math.random() * this.sanalista.length)];
                 console.log("Arvattava sana on: " + this.searchword);
-          } // end pickRandomWord
+                this.getDefinition();
+                // tyhjennetään definitionlist-taulukko
+                this.definitionlist = [];
+          }, // end pickRandomWord
 
 
-
-        } // end methods
+        }, // end methods
+        mounted () {
+            this.getRandomWord();    
+        }
       }); // end vue
 
       //axioksen source
     </script>
-    <script src="https://cdn.jsdelivr.net/npm/axios@0.12.0/dist/axios.min.js"></script>
-    <script
-      src="https://code.jquery.com/jquery-3.4.1.min.js"
-      integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo="
-      crossorigin="anonymous"
-    ></script>
   </body>
 </html>
