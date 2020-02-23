@@ -11,14 +11,13 @@
     <div id="app">
 
     <h1>Guess the Word</h1>
-
     
-    <div v-html="list" class="app"></div>
+    <!-- <div v-html="sanalista[0]" class="app"></div> -->
 
 
     <button @click="getAnswer">Get definition</button>
-    <h6>Definition: {{list}}</h6> 
-    <h6>Textfield: {{tekstikentta}}</h6>
+    <button @click="getRandomWord">Get word</button>
+    <h6>Definition: </h6> 
 
 
     </div>
@@ -29,67 +28,67 @@
       ({
           el: "#app",
           data: {
-            list:
-                [{
-                    word: "",
-                    shortdefinition: "",
-                }],
-
-                //lista: ["eka", "toka"],
-            //oliolista: 
-            sanalista: [
-                {
-                    id: 0,
-                    name: 'Maitoa',
-                    completed: false
-                },
-                {
-                    id: 1,
-                    name: 'Leipää',
-                    completed: false
-                },
-                {
-                    id: 3,
-                    name: 'Banaaneja',
-                    completed: false
-                }
-            ],
+            //lista: ["eka", "toka"],
+            sanalista: [],
             axios_url_start: "https://dictionaryapi.com/api/v3/references/learners/json/",
-            searchword: "dog",
+            searchword: "sheep",
             axios_url_end: "?key=5375d6d8-6ba2-4831-b6e0-e1660a4c076d",
-            tekstikentta: "hgjg",
             },
         methods: {
               getAnswer: function () {
-                //console.log("osoite: " + this.axios_url_start + this.searchword + this.axios_url_end);
+
                 axios.get(this.axios_url_start + this.searchword + this.axios_url_end)
                     .then(function (response) {
                         app.answer = response.data.answer;
                         console.log(response.data);
-    
-                //ilman this. alkua muuttujilla on vain metodin sisäinen skooppi
-                console.log("Word is: " + response.data[0].meta.id);
-                console.log("Def is: " + response.data[0].shortdef);
-                for (let i = 0; i < response.data[0].shortdef.length; i++) {
-                    console.log(response.data[0].shortdef[i]);
-                    console.log(response.data[0].shortdef.length);
-                    this.sanalista.push({id: 4, name: this.response.data[0].meta.id, completed: false});
-
-                }
                     })
                     .catch(function (error) {
                         app.answer = 'Error! ' + error;
                         console.log(app.answer);
-                    })
-            }
+                    })  
+            },  
+                
+            getRandomWord: function () { 
+                  // luetaan sanat tiedostosta listalle
+                    $.ajax({
+                    url:'sanat.txt',
+                    success: function (data){
+                        //pilkotaan tiedoston rivit taulukkoon 
+                        let lines = data.split('\n');
+                        for (let i = 0; i < lines.length; i++) {
+                            this.sanalista.push(lines[i]);
+                        }
+                        console.log("Sanat lisätty listaan");
+                        }.bind(this)
+                    });
+                }   
+                //TOIMIVA 23.2.
+            // getRandomWord: function () { 
+            //       // luetaan sanat tiedostosta listalle
+            //         $.ajax({
+            //         url:'sanat.txt',
+            //         success: function (data){
+            //             //pilkotaan tiedoston rivit taulukkoon 
+            //             let lines = data.split('\n');
+            //             let sanalista = new Array;
+            //             for (let i = 0; i < lines.length; i++) {
+            //                 sanalista.push(lines[i]);
+            //             }
+            //             console.log("Sanat lisätty listaan");
+            //             return sanalista;
+            //             }
+            //         });
+            //     }   
         }
-    
     });
 
-       
+    
         //axioksen source
     </script>
     <script src="https://cdn.jsdelivr.net/npm/axios@0.12.0/dist/axios.min.js"></script>
-
+    <script
+    src="https://code.jquery.com/jquery-3.4.1.min.js"
+    integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo="
+    crossorigin="anonymous"></script>
   </body>
 </html>
