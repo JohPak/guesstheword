@@ -7,88 +7,75 @@
     <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
   </head>
   <body>
-
     <div id="app">
+      <h1>Guess the Word</h1>
+      <p>The aim is to guess the word by its definition.</p>
 
-    <h1>Guess the Word</h1>
-    
-    <!-- <div v-html="sanalista[0]" class="app"></div> -->
+      <!-- <div v-html="sanalista[0]" class="app"></div> -->
 
-
-    <button @click="getAnswer">Get definition</button>
-    <button @click="getRandomWord">Get word</button>
-    <h6>Definition: </h6> 
-
-
+      <button @click="getDefinition">Get definition</button>
+      <button @click="getRandomWord">Get word</button>
+      <button @click="pickRandomWord">pick</button>
+      <h6>Definition:</h6>
     </div>
 
-
     <script>
-      var app = new Vue
-      ({
-          el: "#app",
-          data: {
-            //lista: ["eka", "toka"],
-            sanalista: [],
-            axios_url_start: "https://dictionaryapi.com/api/v3/references/learners/json/",
-            searchword: "sheep",
-            axios_url_end: "?key=5375d6d8-6ba2-4831-b6e0-e1660a4c076d",
-            },
+      var app = new Vue({
+        el: "#app",
+        data: {
+          sanalista: [],
+          axios_url_start:
+            "https://dictionaryapi.com/api/v3/references/learners/json/",
+          searchword: "sheep",
+          axios_url_end: "?key=5375d6d8-6ba2-4831-b6e0-e1660a4c076d"
+        },
         methods: {
-              getAnswer: function () {
+          getDefinition: function() {
+            axios
+              .get(this.axios_url_start + this.searchword + this.axios_url_end)
+              .then(function(response) {
+                app.answer = response.data.answer;
+                console.log(response.data);
+              })
+              .catch(function(error) {
+                app.answer = "Error! " + error;
+                console.log(app.answer);
+              });
+          },
 
-                axios.get(this.axios_url_start + this.searchword + this.axios_url_end)
-                    .then(function (response) {
-                        app.answer = response.data.answer;
-                        console.log(response.data);
-                    })
-                    .catch(function (error) {
-                        app.answer = 'Error! ' + error;
-                        console.log(app.answer);
-                    })  
-            },  
-                
-            getRandomWord: function () { 
-                  // luetaan sanat tiedostosta listalle
-                    $.ajax({
-                    url:'sanat.txt',
-                    success: function (data){
-                        //pilkotaan tiedoston rivit taulukkoon 
-                        let lines = data.split('\n');
-                        for (let i = 0; i < lines.length; i++) {
-                            this.sanalista.push(lines[i]);
-                        }
-                        console.log("Sanat lisätty listaan");
-                        }.bind(this)
-                    });
-                }   
-                //TOIMIVA 23.2.
-            // getRandomWord: function () { 
-            //       // luetaan sanat tiedostosta listalle
-            //         $.ajax({
-            //         url:'sanat.txt',
-            //         success: function (data){
-            //             //pilkotaan tiedoston rivit taulukkoon 
-            //             let lines = data.split('\n');
-            //             let sanalista = new Array;
-            //             for (let i = 0; i < lines.length; i++) {
-            //                 sanalista.push(lines[i]);
-            //             }
-            //             console.log("Sanat lisätty listaan");
-            //             return sanalista;
-            //             }
-            //         });
-            //     }   
-        }
-    });
+          getRandomWord: function() {
+            // luetaan sanat tiedostosta listalle
+            $.ajax({
+              url: "sanat.txt",
+              success: function(data) {
+                //pilkotaan tiedoston rivit taulukkoon
+                let lines = data.split("\n");
+                for (let i = 0; i < lines.length; i++) {
+                  this.sanalista.push(lines[i]);
+                }
+                console.log(lines.length + " sanaa lisätty listaan");
+              }.bind(this) // bindin avulla pääsi eroon "sanalista not defined" -herjasta. Nyt sanalista sisältää tiedoston sanat!!
+            });
+          }, 
 
-    
-        //axioksen source
+          pickRandomWord: function() {
+                // arpoo satunnaisen sanan listasta
+                this.searchword = this.sanalista[Math.floor(Math.random() * this.sanalista.length)];
+                console.log("Arvattava sana on: " + this.searchword);
+          } // end pickRandomWord
+
+
+
+        } // end methods
+      }); // end vue
+
+      //axioksen source
     </script>
     <script src="https://cdn.jsdelivr.net/npm/axios@0.12.0/dist/axios.min.js"></script>
     <script
-    src="https://code.jquery.com/jquery-3.4.1.min.js"
-    integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo="
-    crossorigin="anonymous"></script>
+      src="https://code.jquery.com/jquery-3.4.1.min.js"
+      integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo="
+      crossorigin="anonymous"
+    ></script>
   </body>
 </html>
