@@ -7,8 +7,7 @@
         <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
         <!-- Siirretty Axios ja Ajax sivun lopusta tänne ylös (muuten mounted-metodit ei toimineet) -->
         <script src="https://cdn.jsdelivr.net/npm/axios@0.12.0/dist/axios.min.js"></script>
-        <script
-          src="https://code.jquery.com/jquery-3.4.1.min.js"
+        <script src="https://code.jquery.com/jquery-3.4.1.min.js"
           integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo="
           crossorigin="anonymous"></script>
           <link rel="stylesheet" type="text/css" href="style.css">
@@ -19,31 +18,55 @@
             <div class="gameinfo"><p>The aim is to guess the word by its definition.</p></div>
             <div class="points"><p>Points: {{points}}</p></div>
             
-            <button class="drawbutton" @click="pickRandomWord">Draw new word</button>
-            <br><br>
-            <div class="wordlength">
+            <button class="drawbutton" @click="pickRandomWord">Draw new word</button></br></br>
+            
+            <!-- Näyttää arvattavan sanan kirjainten määrän, mikäli sana on asetettu -->
+            <div class="wordlength" v-if="searchword.length">
                 <p>
-                    (the word has {{searchword.length}} letters)
+                    Button is {{buttondisabled}}
                 </p>
-            </div><br>
+            </div>
+            <div class="guessdiv" v-if="searchword.length">
+                <input type="text" @keyup="calculateAmount" v-model="guessinput"> {{merkkimaara}}
+            </div>
+
+
+            <div><p class="error">{{errormessage}}</p></div>
             <h3>Hints:</h3>
             <ul class="hints">
                 <li v-for="(item) in definitionlist">{{item}}</li>
             </ul>
+            <button class="hintbutton" v-if="searchword.length" @click="buyHint">Buy first letter (-10 p)</button>
 
         </div>
         
     <script>
+
+        
       var app = new Vue({
         el: "#app",
         data: {
           wordlist: [],
           searchword: "",
+          merkkimaara: "",
+          guessinput: "",
           definitionlist: [],
-          points: "0",
-          axios_url_start:
-            "https://dictionaryapi.com/api/v3/references/learners/json/",
+          points: "50",
+          hintindex: "0",
+          buttondisabled: false,
+          errormessage: "",
+          axios_url_start: "https://dictionaryapi.com/api/v3/references/learners/json/",
           axios_url_end: "?key=5375d6d8-6ba2-4831-b6e0-e1660a4c076d"
+        },
+        computed: {
+          calculateAmount: function() {
+              if (this.guessinput.length < this.searchword.length || this.guessinput.length > this.searchword.length) {
+                    return this.merkkimaara = this.guessinput.length + " characters.";
+                }
+                else if(this.guessinput.length == this.searchword.length) {
+                    return this.merkkimaara = this.guessinput.length + " characters - it's a match!";
+                }
+            }
         },
         methods: {
           getDefinition: function() {
@@ -52,15 +75,22 @@
               .then(function(response) {
                 app.answer = response.data.answer;
                 //console.log(response.data);
-                for (let i = 0; i <= response.data[0].shortdef.length; i++) {
-                    this.definitionlist.push(response.data[0].shortdef[i]);
+                try {
+                    for (let i = 0; i <= response.data[0].shortdef.length; i++) {
+                        this.definitionlist.push(response.data[0].shortdef[i]);
+                    }
+                    this.definitionlist.pop(); // poistetaan viimeinen alkio, koska se tulee apista tyhjänä
+                    console.log(this.definitionlist);
+                    this.errormessage = "";
+                } catch (error) {
+                    this.errormessage = "Oops! Did you broke me? Please try to draw again.";
+                    console.log(error);
                 }
-                this.definitionlist.pop(); // poistetaan viimeinen alkio, koska se tulee apista tyhjänä
-                console.log(this.definitionlist);
               }.bind(this))
               .catch(function(error) {
                 app.answer = "Error! " + error;
                 console.log(app.answer);
+                this.errormessage = "Some error occurred! Please click the button again.";
               });
           },
 
@@ -81,13 +111,38 @@
           }, 
 
           pickRandomWord: function() {
-                // arpoo satunnaisen sanan listasta
-                this.searchword = this.wordlist[Math.floor(Math.random() * this.wordlist.length)];
-                console.log("Arvattava sana on: " + this.searchword);
-                this.getDefinition();
-                // tyhjennetään definitionlist-taulukko
-                this.definitionlist = [];
+              if (this.buttondisabled) return; // 
+                    // nollataan vinkkilaskuri
+                    this.hintindex = 0;
+                    // arpoo satunnaisen sanan listasta
+                    this.searchword = this.wordlist[Math.floor(Math.random() * this.wordlist.length)];
+                    console.log("Arvattava sana on: " + this.searchword);
+                    this.getDefinition();
+                    // tyhjennetään definitionlist-taulukko
+                    this.definitionlist = [];
+                    // sijoitetaan ekaksi vihjeeksi kirjainten lukumäärä
+                    this.definitionlist.push("the word has " + this.searchword.length + " letters");
+                setTimeout(() => {
+                    this.buttondisabled = false;
+                }, 3000);
           }, // end pickRandomWord
+          buyHint: function() {
+                if (this.points >= 10) {
+                    this.points-10;
+                    if (this.hintindex == 0) {
+                    this.definitionlist.push("the first letter is " + this.searchword.charAt(this.hintindex));
+                    }
+                    else if(this.hintindex > 0 && this.hintindex < this.searchword.length-1) {
+                    this.definitionlist.push("the next letter is " + this.searchword.charAt(this.hintindex));
+                    }
+                    else if(this.hintindex == this.searchword.length-1) {
+                    this.definitionlist.push("the last letter is " + this.searchword.charAt(this.hintindex));
+                    }
+                    this.hintindex++;
+                }
+                else
+                    this.errormessage("Not enough points to buy letter!");
+          }
 
 
         }, // end methods

@@ -18,8 +18,13 @@ h1 {
     width: 600px;
     margin:auto;
     padding-bottom: 15px;
+    -webkit-box-shadow: -2px 2px 8px -1px rgba(0,0,0,0.23);
+    -moz-box-shadow: -2px 2px 8px -1px rgba(0,0,0,0.23);
+    box-shadow: -2px 2px 8px -1px rgba(0,0,0,0.23);
+    border-radius: 10px;
+
 }
-p, h3, button, li {
+p, h3, button, li, .guessdiv {
     margin-left: 20px;
     margin-right: 20px;
     font-family: monospace;
@@ -32,6 +37,7 @@ p, h3, button, li {
     font-weight: bold;
     float: right;
     text-align: left;
+    font-size: 1.2em;
 }
 .drawbutton {
     /*border: 2px solid black;*/
@@ -41,7 +47,30 @@ p, h3, button, li {
     font-size: 1.2em;
     font-weight: bold;
     margin-top: 20px;
+    color: white;
+    text-shadow: 2px 2px 5px #30150D;
+    border-color: 2px solid #30150D;
+    background-color: #aa6dbc;
+    letter-spacing: 0.2em;
+    -webkit-box-shadow: -2px 2px 8px -1px rgba(0,0,0,0.23);
+    -moz-box-shadow: -2px 2px 8px -1px rgba(0,0,0,0.23);
+    box-shadow: -2px 2px 8px -1px rgba(0,0,0,0.23);
+    border-radius: 10px;
+}
+.drawbutton:hover {
+    background-color: #855594;
+    cursor: pointer;
 }
 .hints li {
     padding-bottom: 10px;
+}
+.error {
+    color: red;
+}
+.guessdiv input{
+    width:150px;
+    padding: 10px;
+    font-size: 1.2em;
+    font-family: monospace;
+
 }
