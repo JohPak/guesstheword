@@ -11,24 +11,25 @@
           src="https://code.jquery.com/jquery-3.4.1.min.js"
           integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo="
           crossorigin="anonymous"></script>
+          <link rel="stylesheet" type="text/css" href="style.css">
     </head>
     <body>
         <div id="app">
             <h1>Guess the Word</h1>
-            <p>The aim is to guess the word by its definition.</p>
+            <div class="gameinfo"><p>The aim is to guess the word by its definition.</p></div>
+            <div class="points"><p>Points: {{points}}</p></div>
             
-            <!-- <div v-html="sanalista[0]" class="app"></div> -->
-            
-            <button @click="pickRandomWord">Draw new word</button>
+            <button class="drawbutton" @click="pickRandomWord">Draw new word</button>
             <br><br>
-            <div>
-                (the word has {{searchword.length}} letters)
+            <div class="wordlength">
+                <p>
+                    (the word has {{searchword.length}} letters)
+                </p>
             </div><br>
-            <div>
-                {{definitionlist[0]}}
-                {{definitionlist[1]}}
-                {{definitionlist[3]}}
-            </div>
+            <h3>Hints:</h3>
+            <ul class="hints">
+                <li v-for="(item) in definitionlist">{{item}}</li>
+            </ul>
 
         </div>
         
@@ -36,11 +37,12 @@
       var app = new Vue({
         el: "#app",
         data: {
-          sanalista: [],
+          wordlist: [],
+          searchword: "",
           definitionlist: [],
+          points: "0",
           axios_url_start:
             "https://dictionaryapi.com/api/v3/references/learners/json/",
-          searchword: "",
           axios_url_end: "?key=5375d6d8-6ba2-4831-b6e0-e1660a4c076d"
         },
         methods: {
@@ -49,10 +51,11 @@
               .get(this.axios_url_start + this.searchword + this.axios_url_end)
               .then(function(response) {
                 app.answer = response.data.answer;
-                console.log(response.data);
-                for (let i = 0; i < response.data[0].shortdef.length; i++) {
+                //console.log(response.data);
+                for (let i = 0; i <= response.data[0].shortdef.length; i++) {
                     this.definitionlist.push(response.data[0].shortdef[i]);
                 }
+                this.definitionlist.pop(); // poistetaan viimeinen alkio, koska se tulee apista tyhjänä
                 console.log(this.definitionlist);
               }.bind(this))
               .catch(function(error) {
@@ -69,17 +72,17 @@
                 //pilkotaan tiedoston rivit taulukkoon
                 let lines = data.split("\n");
                 for (let i = 0; i < lines.length; i++) {
-                  this.sanalista.push(lines[i]);
+                  this.wordlist.push(lines[i]);
                 }
                 console.log(lines.length + " sanaa lisätty listaan");
-              }.bind(this) // bindin avulla pääsi eroon "sanalista not defined" -herjasta. Nyt sanalista sisältää tiedoston sanat!!
+              }.bind(this) // bindin avulla pääsi eroon "wordlist not defined" -herjasta. Nyt wordlist sisältää tiedoston sanat!!
               
             });
           }, 
 
           pickRandomWord: function() {
                 // arpoo satunnaisen sanan listasta
-                this.searchword = this.sanalista[Math.floor(Math.random() * this.sanalista.length)];
+                this.searchword = this.wordlist[Math.floor(Math.random() * this.wordlist.length)];
                 console.log("Arvattava sana on: " + this.searchword);
                 this.getDefinition();
                 // tyhjennetään definitionlist-taulukko
@@ -89,7 +92,7 @@
 
         }, // end methods
         mounted () {
-            this.getRandomWord();    
+            this.getRandomWord(); // on page load (mounting dom)
         }
       }); // end vue
 

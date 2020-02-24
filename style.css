@@ -1,0 +1,47 @@
+body {
+    background-color: lightgray;
+    margin:0;
+}
+h1 {
+    background-color: white;
+    text-align: center;
+    color: #aa6dbc;
+    border-top: 10px solid #925da2;
+    padding-top: 5px;
+    border-bottom: 10px solid #925da2;
+    padding-bottom: 5px;
+    font-family: Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif ;
+    font-size: 2.5em;
+}
+#app {
+    background-color: white;
+    width: 600px;
+    margin:auto;
+    padding-bottom: 15px;
+}
+p, h3, button, li {
+    margin-left: 20px;
+    margin-right: 20px;
+    font-family: monospace;
+}
+.gameinfo {
+    float: left;
+    /*border: 2px solid black;*/
+}
+.points {
+    font-weight: bold;
+    float: right;
+    text-align: left;
+}
+.drawbutton {
+    /*border: 2px solid black;*/
+    height: 50px;
+    padding-left: 20px;
+    padding-right: 20px;
+    font-size: 1.2em;
+    font-weight: bold;
+    margin-top: 20px;
+}
+.hints li {
+    padding-bottom: 10px;
+}
