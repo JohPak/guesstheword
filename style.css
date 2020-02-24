@@ -24,7 +24,7 @@ h1 {
     border-radius: 10px;
 
 }
-p, h3, button, li, .guessdiv {
+p, h3, button, li {
     margin-left: 20px;
     margin-right: 20px;
     font-family: monospace;
@@ -36,8 +36,9 @@ p, h3, button, li, .guessdiv {
 .points {
     font-weight: bold;
     float: right;
-    text-align: left;
+    text-align: right;
     font-size: 1.2em;
+    line-height: 0.5em;
 }
 .drawbutton {
     /*border: 2px solid black;*/
@@ -67,10 +68,14 @@ p, h3, button, li, .guessdiv {
 .error {
     color: red;
 }
-.guessdiv input{
+input{
     width:150px;
     padding: 10px;
     font-size: 1.2em;
     font-family: monospace;
-
+    margin-left: 20px;
+    margin-right: 10px;
+}
+.guessdiv {
+    font-family: monospace;
 }
