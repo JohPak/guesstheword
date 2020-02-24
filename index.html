@@ -14,24 +14,27 @@
     </head>
     <body>
         <div id="app">
-            <h1>Guess the Word</h1>
+            <!-- Pelin otsikko, kuvaus ja pisteet sekä arvauskerrat -->
+            <h1>{{guesstheword}}</h1>
             <div class="gameinfo"><p>The aim is to guess the word by its definition.</p></div>
             <div class="points"><p>Points: {{points}}</p><p>Tries left: {{trycount}}</p></div>
             
-            <button class="drawbutton" @click="pickRandomWord" v-if="trycount==0">Draw new word</button></br></br>
+            <!-- Kolme painiketta vuorottelee riippuen pelin tilanteesta -->
+            <button class="drawbutton" @click="pickRandomWord" v-if="trycount==0&&points>0">Draw new word</button>
+            <button class="drawbutton" @click="restart" v-if="trycount==0&&points<=0">New game</button>
 
             <div class="guessdiv" v-if="searchword.length&&trycount!=0">
             <button class="drawbutton" @click="checkAnswer">Check</button><br><br>
-                <input type="text" @keyup="calculateAmount" v-model="guessinput"> {{merkkimaara}}</br>
+                <input type="text" @keyup="calculateAmount" v-model="guessinput" v-on:keyup.enter="checkAnswer">{{charCount}}</br>
             </div>
 
 
             <div><p class="error">{{errormessage}}</p></div>
-            <h3>Hints:</h3>
+            <h3 v-if="trycount!=0">Hints:</h3>
             <ul class="hints">
-                <li v-for="(item) in definitionlist">{{item}}</li>
+                <li v-if="trycount!=0" v-for="(item) in definitionlist">{{item}}</li>
             </ul>
-            <button class="hintbutton" v-if="searchword.length" @click="buyHint">Buy hint letter (-10 p)</button>
+            <button v-if="trycount!=0" class="drawbutton" v-if="searchword.length" @click="buyHint">Buy hint letter (-10 p)</button>
 
         </div>
         
@@ -41,14 +44,15 @@
       var app = new Vue({
         el: "#app",
         data: {
+          guesstheword: "Guess the Word",
           wordlist: [],
           searchword: "",
-          merkkimaara: "",
+          charCount: "",
           guessinput: "",
           definitionlist: [],
-          points: "50",
-          trycount: "0",
-          hintindex: "0",
+          points: 50,
+          trycount: 0,
+          hintindex: 0,
           buttondisabled: false,
           errormessage: "",
           axios_url_start: "https://dictionaryapi.com/api/v3/references/learners/json/",
@@ -57,10 +61,10 @@
         computed: {
           calculateAmount: function() {
               if (this.guessinput.length < this.searchword.length || this.guessinput.length > this.searchword.length) {
-                    return this.merkkimaara = this.guessinput.length + " characters.";
+                    return this.charCount = this.guessinput.length + " characters.";
                 }
                 else if(this.guessinput.length == this.searchword.length) {
-                    return this.merkkimaara = this.guessinput.length + " characters - count matching!";
+                    return this.charCount = this.guessinput.length + " characters - count matching!";
                 }
             }
         },
@@ -142,20 +146,45 @@
                     this.errormessage = "Not enough points to buy letter!";
           }, // end buyHint
           checkAnswer: function() {
-            if(this.trycount > 1)
-            {
-                if(this.trycount >0 && this.guessinput.length == this.searchword.length) {
-                    this.trycount -= 1;
-                }
-                else {
-                    this.errormessage("No more tries left! Draw new word.");
-                }
-            }
-            else {
-            this.trycount -= 1;
-            this.errormessage = "The word was " + this.searchword;
-            }
-          } // end checkAnswer
+              if(this.guessinput == this.searchword) {
+                  this.errormessage = "Hooray you guessed it right! You got +40 points!";
+                  this.points = this.points + 40;
+                  this.guesstheword = "+ 40 points!";
+                  setTimeout(() => {
+                      this.guesstheword = "Guess the Word";
+                      this.guessinput = "";
+                      this.pickRandomWord();
+                }, 3000);
+              }
+              else {
+
+                    if(this.trycount > 1)
+                    {
+                      if(this.trycount >0 && this.guessinput.length == this.searchword.length) {
+                          this.trycount -= 1;
+                          this.errormessage = "Wrong. " + this.trycount + " tries left.";
+                        }
+                        else {
+                            this.errormessage = "No more tries left! Draw new word.";
+                        }
+                    }
+                    else {
+                        this.trycount -= 1;
+                        this.errormessage = "The word was " + this.searchword + ". You lost 20 points!";
+                        this.points -= 20;
+                        if (this.points <= 0) {
+                            this.guesstheword = "GAME OVER";
+                            }
+                        }
+                } // main else end
+
+          }, // end checkAnswer
+          restart: function() {
+              this.points = "50";
+              this.trycount = "3";
+              this.guesstheword = "Guess the Word";
+              this.errormessage = "";
+          }
 
 
         }, // end methods

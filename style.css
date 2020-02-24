@@ -10,6 +10,7 @@ h1 {
     padding-top: 5px;
     border-bottom: 10px solid #925da2;
     padding-bottom: 5px;
+    margin-bottom: 5px;
     font-family: Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif ;
     font-size: 2.5em;
 }
@@ -47,7 +48,6 @@ p, h3, button, li {
     padding-right: 20px;
     font-size: 1.2em;
     font-weight: bold;
-    margin-top: 20px;
     color: white;
     text-shadow: 2px 2px 5px #30150D;
     border-color: 2px solid #30150D;
