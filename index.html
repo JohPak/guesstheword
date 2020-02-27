@@ -16,7 +16,7 @@
         <div id="app">
             <!-- Pelin otsikko, kuvaus ja pisteet sekä arvauskerrat -->
             <h1>{{guesstheword}}</h1>
-            <div class="gameinfo"><p>The aim is to guess the word by its definition.</p>
+            <div class="gameinfo"><p>The aim is to guess the word by its definition and collect as much points as possible. The game is over when you lose all your points!</p>
             </div>
             
             <div class="points"><p>Points: {{points}}</p><p>Tries left: {{trycount}}</p></div>
@@ -25,8 +25,9 @@
             <button class="drawbutton" @click="pickRandomWord" v-if="trycount==0&&points>0">Draw new word</button>
             <button class="drawbutton" @click="restart" v-if="trycount==0&&points<=0">New game</button>
 
+            <!-- Näytä arvauskenttä, mikäli sana on arvottu ja arvauskertoja on jäljellä -->
             <div class="guessdiv" v-if="searchword.length&&trycount!=0">
-                <input type="text" @keyup="calculateAmount" v-model="guessinput" v-on:keyup.enter="checkAnswer">{{charCount}}</br>
+                <input type="text" v-focus @keyup="calculateAmount" v-model="guessinput" v-on:keyup.enter="checkAnswer">{{charCount}}</br>
                 <button class="drawbutton" @click="checkAnswer">Check</button><br><br>
             </div>
 
@@ -42,10 +43,14 @@
             <div class="highscore">
                 <p>Highscore: {{highscore[0]}} {{highscore[1]}}</p>
                 <!-- Mikäli pelaajan pisteet ylittää parhaat pisteet, näytetään nappi & kenttä joilla voi tallentaa oman tuloksen -->
-                <div v-if="points>highscore[1]">
-                    <p>New highscore! You can save your points, but it restarts the game.</p>
-                    <input class="hsinput" type="text" v-model="name">
-                    <button class="drawbutton" @click="saveHighscore">Save & restart</button>
+                <div class="highscore_submit" v-if="points>highscore[1]">
+                    <p>You can save your points, but it restarts the game.</p>
+                    <!-- <form method="GET" action="textwriter.php"> -->
+                        <div class="newhighscore"><p>New highscore!</p></div>
+                        <input class="hsinput" type="text" v-model="name" name="username">
+                        <input class="hsinput" type="hidden" v-model="points" name="points">
+                        <button class="drawbutton" type="submit" @click="saveHighscore">Save & restart</button>
+                    <!-- </form> -->
                 </div>
             </div>
         </div>
@@ -72,13 +77,23 @@
           axios_url_start: "https://dictionaryapi.com/api/v3/references/learners/json/",
           axios_url_end: "?key=5375d6d8-6ba2-4831-b6e0-e1660a4c076d"
         },
+        directives: {
+  focus: {
+    // directive definition
+    inserted: function (el) {
+      el.focus()
+    }
+  }
+},
         computed: {
           calculateAmount: function() {
+              // mikäli arvauksen pituus on < tai > kuin arvattavan sanan pituus
               if (this.guessinput.length < this.searchword.length || this.guessinput.length > this.searchword.length) {
-                    return this.charCount = this.guessinput.length + " characters.";
+                    return this.charCount = this.searchword.length - this.guessinput.length + " characters.";
                 }
+                // kun arvauksen pituus täsmää arvattavan sanan pituuteen
                 else if(this.guessinput.length == this.searchword.length) {
-                    return this.charCount = this.guessinput.length + " characters - count matching!";
+                    return this.charCount = "Count matching!";
                 }
             }
         },
@@ -185,29 +200,36 @@
               if(this.guessinput == this.searchword) {
                   this.errormessage = "Hooray you guessed it right! You got +40 points!";
                   this.points = this.points + 40;
-                  this.guesstheword = "+ 40 points!";
+                  this.guesstheword = "+ 40 points!"; // show this in title section
+
                   setTimeout(() => {
-                      this.guesstheword = "Guess the Word";
+                      this.guesstheword = "Guess the Word"; // setting title
                       this.guessinput = "";
                       this.pickRandomWord();
-                }, 3000);
+                }, 2500); // wait 3 secs after right guess before automatically drawing new word
               }
               else {
 
                     if(this.trycount > 1)
                     {
+                        // handling wrong answers
                       if(this.trycount >0 && this.guessinput.length == this.searchword.length) {
                           this.trycount -= 1;
                           this.errormessage = "Wrong. " + this.trycount + " tries left.";
+                        }
+                        else if(this.guessinput.length != this.searchword.length) {
+                            this.errormessage = "Check your character count!";
                         }
                         else {
                             this.errormessage = "No more tries left! Draw new word.";
                         }
                     }
+                    // reveal the word after all tries are used
                     else {
                         this.trycount -= 1;
                         this.errormessage = "The word was " + this.searchword + ". You lost 20 points!";
                         this.points -= 20;
+                        // game over when
                         if (this.points <= 0) {
                             this.guesstheword = "GAME OVER";
                             }
@@ -224,30 +246,31 @@
           },
 
           saveHighscore: function() {
-            this.highscore[0] = this.name;
-            console.log(this.highscore[0]);
-            this.highscore[1] = this.points;
-            console.log(this.highscore[1]);
-            this.restart();
-            // tallennetaan tiedostoon
-            $.ajax({
-              url: "highscore.txt",
-              success: function(data) {
-                
-                console.log("Highscore tallennettu (" + this.highscore[0] + " " + + this.highscore[1] + ")";
-              }.bind(this),
-              error: function (request, status, error) {
-                this.highscore.push("Error! " + request.statusText);
-                }.bind(this)
-            });
-          }, // end loadHighscore
-            
-          } // end saveHighscore
-
-
+              let hsData = this.name + "," + this.points;
+              $.ajax({
+                  url:"textwriter.php", // sivu joka kirjoittaa highscoren tekstitiedostoon
+                  type: "post",
+                  dataType: 'text',
+                  data: {highscore:hsData},
+                success: function(result) {
+                    if (result === "OK") {
+                        console.log("Highscore tallennettu: " + result);
+                        // nollataan ja käynnistetään peli uudelleen highscoren tallennuksen jälkeen
+                        this.restart();
+                        this.highscore = []; // tyhjennetään highscore-taulukko
+                        this.loadHighscore(); // ladataan taulukkoon uudet tiedot tiedostosta
+                    }
+                    else
+                        console.log("Highscoren tallennus epäonnistui: " + result);
+                }.bind(this),
+                error: function() {
+                    console.log("Highscoren tallennus epäonnistui!");
+                }
+              })
+          },
         }, // end methods
         mounted () {
-            this.loadWordlist(); // on page load (mounting dom)
+            this.loadWordlist(); // these are executed on page load (mounting dom)
             this.loadHighscore();
         }
       }); // end vue
