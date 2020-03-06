@@ -1,6 +1,6 @@
 body {
     background-color: lightgray;
-    margin:0;
+    /* margin:0; */
 }
 h1 {
     background-color: white;
@@ -16,7 +16,7 @@ h1 {
 }
 #app {
     background-color: white;
-    width: 600px;
+    max-width: 600px;
     margin:auto;
     padding-bottom: 10px;
     -webkit-box-shadow: -2px 2px 8px -1px rgba(0,0,0,0.23);
@@ -40,7 +40,7 @@ p, h3, button, li {
 }
 .points {
     font-weight: bold;
-    float: right;
+    /*float: right;*/
     text-align: right;
     font-size: 1.2em;
     line-height: 0.5em;
@@ -57,7 +57,7 @@ p, h3, button, li {
     font-weight: bold;
     color:green;
 }
-.drawbutton {
+.gamebutton {
     /*border: 2px solid black;*/
     height: 50px;
     padding-left: 20px;
@@ -74,7 +74,12 @@ p, h3, button, li {
     box-shadow: -2px 2px 8px -1px rgba(0,0,0,0.23);
     border-radius: 10px;
 }
-.drawbutton:hover {
+.hintbutton {
+    width: 247px;
+    margin-right: 0;
+}
+
+.gamebutton:hover {
     background-color: #855594;
     cursor: pointer;
 }

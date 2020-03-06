@@ -1,5 +1,6 @@
 <?php
 
+// php-tiedosto joka avustaa highscore-tiedostoon kirjoittamisessa
 // lähde: https://www.dreamincode.net/forums/topic/69055-how-to-save-a-txt-file-to-a-server-using-php-code/
 
 // Open the file in write mode

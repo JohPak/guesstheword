@@ -21,35 +21,38 @@
             
             <div class="points"><p>Points: {{points}}</p><p>Tries left: {{trycount}}</p></div>
             
-            <!-- Kolme painiketta vuorottelee riippuen pelin tilanteesta -->
-            <button class="drawbutton" @click="pickRandomWord" v-if="trycount==0&&points>0">Draw new word</button>
-            <button class="drawbutton" @click="restart" v-if="trycount==0&&points<=0">New game</button>
+            <!-- Kolme painiketta (draw new word, new game, check word) vuorottelee riippuen pelin tilanteesta -->
+            <button class="gamebutton" @click="pickRandomWord" v-if="trycount==0&&points>0">Draw new word</button>
+            <button class="gamebutton" @click="restart" v-if="trycount==0&&points<=0">New game</button>
 
             <!-- Näytä arvauskenttä, mikäli sana on arvottu ja arvauskertoja on jäljellä -->
             <div class="guessdiv" v-if="searchword.length&&trycount!=0">
-                <input type="text" v-focus @keyup="calculateAmount" v-model="guessinput" v-on:keyup.enter="checkAnswer">{{charCount}}</br>
-                <button class="drawbutton" @click="checkAnswer">Check</button><br><br>
+                <input type="text" v-focus @keyup="calculateAmount" v-model="guessinput" @keyup.enter="checkAnswer">{{charcount}}</br>
+                <button class="gamebutton" @click="checkAnswer">Check</button><br><br>
             </div>
 
 
             <div><p class="error">{{errormessage}}</p></div>
             <!-- Näytetään vinkkien otsikko, vinkit ja kirjaimen ostonappi vain jos peli on käynnissä -->
-            <h3 v-if="trycount!=0">Hints:</h3>
-            <ul class="hints">
-                <li v-if="trycount!=0" v-for="(item) in definitionlist">{{item}}</li>
-            </ul>
-            <button v-if="trycount!=0" class="drawbutton" v-if="searchword.length" @click="buyHint">Buy hint letter (-10 p)</button>
+            <div class="hintdiv" v-if="trycount!=0">
+                <h3>Hints:</h3>
+                <ul class="hints">
+                    <li v-for="(item) in definitionlist">{{item}}</li>
+                </ul>
+                <button class="gamebutton hintbutton" v-if="searchword.length" @click="buyHint">Buy hint letter (-10 p)</button>
+                <button class="gamebutton hintbutton" v-if="points>=50" @click="playAudio">Buy audio hint (-50 p)</button>
+            </div>
 
             <div class="highscore">
                 <p>Highscore: {{highscore[0]}} {{highscore[1]}}</p>
                 <!-- Mikäli pelaajan pisteet ylittää parhaat pisteet, näytetään nappi & kenttä joilla voi tallentaa oman tuloksen -->
                 <div class="highscore_submit" v-if="points>highscore[1]">
-                    <p>You can save your points, but it restarts the game.</p>
                     <!-- <form method="GET" action="textwriter.php"> -->
                         <div class="newhighscore"><p>New highscore!</p></div>
-                        <input class="hsinput" type="text" v-model="name" name="username">
+                        <input class="hsinput" type="text" v-model="name" name="username" @click="selectAll" ref="input">
                         <input class="hsinput" type="hidden" v-model="points" name="points">
-                        <button class="drawbutton" type="submit" @click="saveHighscore">Save & restart</button>
+                        <button class="gamebutton" type="submit" @click="saveHighscore">Save & restart</button>
+                        <p>You can save your points, but it restarts the game.</p>
                     <!-- </form> -->
                 </div>
             </div>
@@ -64,7 +67,7 @@
           guesstheword: "Guess the Word",
           wordlist: [],
           searchword: "",
-          charCount: "",
+          charcount: "",
           guessinput: "",
           definitionlist: [],
           highscore: [],
@@ -72,31 +75,22 @@
           points: 50,
           trycount: 0,
           hintindex: 0,
-          buttondisabled: false,
           errormessage: "",
           axios_url_start: "https://dictionaryapi.com/api/v3/references/learners/json/",
-          axios_url_end: "?key=5375d6d8-6ba2-4831-b6e0-e1660a4c076d"
+          axios_url_end: "?key=5375d6d8-6ba2-4831-b6e0-e1660a4c076d",
+          audio_base_url: "https://media.merriam-webster.com/soundc11/",
+          audio_wav: "",
+          audio_url: ""
         },
         directives: {
-  focus: {
-    // directive definition
-    inserted: function (el) {
-      el.focus()
-    }
+            focus: {
+                // directive definition
+                // tekee sanan arvauskentän aktiiviseksi
+                inserted: function (el) {
+                el.focus()
+                }
   }
 },
-        computed: {
-          calculateAmount: function() {
-              // mikäli arvauksen pituus on < tai > kuin arvattavan sanan pituus
-              if (this.guessinput.length < this.searchword.length || this.guessinput.length > this.searchword.length) {
-                    return this.charCount = this.searchword.length - this.guessinput.length + " characters.";
-                }
-                // kun arvauksen pituus täsmää arvattavan sanan pituuteen
-                else if(this.guessinput.length == this.searchword.length) {
-                    return this.charCount = "Count matching!";
-                }
-            }
-        },
         methods: {
           getDefinition: function() {
             axios
@@ -112,10 +106,13 @@
                     console.log(this.definitionlist);
                     this.errormessage = ""; // tyhjätään virheviestit
                     this.guessinput = ""; // tyhjätään arvauskenttä
-                    this.trycount = "3"; // palautetaan arvauskertojen määrä kolmeen
+                    this.trycount = 3; // palautetaan arvauskertojen määrä kolmeen
+                    this.getAudio(); // haetaan sanan wav-tiedoston url
+
                 } catch (error) {
-                    this.errormessage = "Oops! Did you broke me? Please try to draw again.";
-                    console.log(error);
+                    console.log("Kuvauksen lataus ei onnistunut (sanalle ei ehkä löydy kuvausta): " + error);
+                    console.log("Arvotaan uusi sana.");
+                    this.pickRandomWord();
                 }
               }.bind(this))
               .catch(function(error) {
@@ -123,6 +120,34 @@
                 console.log(app.answer);
                 this.errormessage = "Some error occurred! Please click the button again.";
               });
+          },
+
+          getAudio: function() {
+            axios
+              .get(this.axios_url_start + this.searchword + this.axios_url_end)
+              .then(function(response) {
+                app.answer = response.data.answer;
+                try {
+                    this.audio_wav = response.data[0].hwi.prs[0].sound.audio + ".wav"; //wav-tiedoston nimi
+                    this.audio_url = this.audio_base_url + this.audio_wav.charAt(0) + "/" + this.audio_wav;
+                    console.log(this.audio_url);
+
+                } catch (error) {
+                    console.log("Virhe! " + error);
+
+                }
+              }.bind(this))
+              .catch(function(error) {
+                app.answer = "Error! " + error;
+                console.log(app.answer);
+                this.errormessage = "Some error occurred!" + error;
+              });
+          },
+
+          playAudio: function() {
+            var audio = new Audio(this.audio_url);
+            audio.play();
+            this.points -= 50;
           },
 
           loadWordlist: function() {
@@ -162,7 +187,6 @@
           }, // end loadHighscore
 
           pickRandomWord: function() {
-            //   if (this.buttondisabled) return; // 
                     // nollataan vinkkilaskuri
                     this.hintindex = 0;
                     // arpoo satunnaisen sanan listasta
@@ -173,9 +197,6 @@
                     this.definitionlist = [];
                     // sijoitetaan ekaksi vihjeeksi kirjainten lukumäärä
                     this.definitionlist.push("the word has " + this.searchword.length + " letters");
-                // setTimeout(() => {
-                //     this.buttondisabled = false;
-                // }, 3000);
           }, // end pickRandomWord
           
           buyHint: function() {
@@ -191,6 +212,7 @@
                     this.definitionlist.push("the last letter is " + this.searchword.charAt(this.hintindex));
                     }
                     this.hintindex++;
+
                 }
                 else
                     this.errormessage = "Not enough points to buy letter!";
@@ -239,8 +261,8 @@
           }, // end checkAnswer
           
           restart: function() {
-              this.points = "50";
-              this.trycount = "0";
+              this.points = 50;
+              this.trycount = 0;
               this.guesstheword = "Guess the Word";
               this.errormessage = "";
           },
@@ -268,14 +290,32 @@
                 }
               })
           },
+          
+          selectAll: function() {
+            // valitsee ref="input" -kentän koko sisällön kun sitä klikkaa  
+            this.$refs.input.select();
+          },
+
+          calculateAmount: function() {
+              // mikäli arvauksen pituus on < tai > kuin arvattavan sanan pituus
+              if (this.guessinput.length < this.searchword.length || this.guessinput.length > this.searchword.length) {
+                    return this.charcount = this.searchword.length - this.guessinput.length + " characters.";
+                }
+                // kun arvauksen pituus täsmää arvattavan sanan pituuteen
+                else if(this.guessinput.length == this.searchword.length) {
+                    return this.charcount = "Count matching!";
+                }
+            }
+        
         }, // end methods
-        mounted () {
-            this.loadWordlist(); // these are executed on page load (mounting dom)
+
+        mounted: function() {
+            this.loadWordlist(); // these are executed on page load (when mounting dom)
             this.loadHighscore();
         }
       }); // end vue
 
-      //axioksen source
+    
     </script>
   </body>
 </html>
