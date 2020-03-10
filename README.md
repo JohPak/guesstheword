@@ -2,6 +2,13 @@
 **Game gives definition of words and player has to guess the word in question.**
 Player is able to buy hints with points (letters and audio) and is given 3 chances to guess each word. The game ends when player has lost all points. Player can also save his/her name and score if new highscore is reached, but it will restart the game.
 
+Guess the Word | Guess the Word | Guess the Word
+------------ | -------------| -------------
+![Image of Guess the Word](http://jossu.net/guess/1.png) | ![Image of Guess the Word](http://jossu.net/guess/2.png) | ![Image of Guess the Word](http://jossu.net/guess/3.png)
+
+
+
+
 ## What is does?
 
 The game uses Merriam-Webster Dictionary API and a txt-list of ~6000 most common english nouns. Each word is drawn randomly from the list and then definition is loaded from the API.
