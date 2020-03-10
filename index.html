@@ -11,6 +11,7 @@
           integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo="
           crossorigin="anonymous"></script>
           <link rel="stylesheet" type="text/css" href="style.css">
+          <link rel="icon" href="favicon.ico" type="image/x-icon" />
     </head>
     <body>
         <div id="app">
@@ -27,7 +28,7 @@
 
             <!-- Näytä arvauskenttä, mikäli sana on arvottu ja arvauskertoja on jäljellä -->
             <div class="guessdiv" v-if="searchword.length&&trycount!=0">
-                <input type="text" v-focus @keyup="calculateAmount" v-model="guessinput" @keyup.enter="checkAnswer">{{charcount}}</br>
+                <input type="text" v-focus @keyup="calculateAmount" v-model="guessinput" @keyup.enter="checkAnswer">{{charcount}}<br>
                 <button class="gamebutton" @click="checkAnswer">Check</button><br><br>
             </div>
 

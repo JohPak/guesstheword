@@ -31,16 +31,18 @@ p, h3, button, li {
     font-family: monospace;
 }
 .gameinfo, .points {
-    height: 80px;
-    /*border: 2px solid black;*/
+    /* min-height: 80px; */
+    /* border: 2px solid black; */
+    margin-bottom: 15px;
 }
 .gameinfo {
     float: left;
-    width: 420px;
+    width: 400px;
+    max-width: 100%;
 }
 .points {
     font-weight: bold;
-    /*float: right;*/
+    float: right;
     text-align: right;
     font-size: 1.2em;
     line-height: 0.5em;
@@ -66,7 +68,6 @@ p, h3, button, li {
     font-weight: bold;
     color: white;
     text-shadow: 2px 2px 5px #30150D;
-    border-color: 2px solid #30150D;
     background-color: #aa6dbc;
     letter-spacing: 0.2em;
     -webkit-box-shadow: -2px 2px 8px -1px rgba(0,0,0,0.23);
@@ -97,7 +98,6 @@ input{
     margin-left: 20px;
     margin-bottom: 10px;
     margin-right: 10px;
-    border-color: 1px solid #30150D;
     border-radius: 10px;
 }
 .hsinput {
@@ -109,4 +109,6 @@ input{
 }
 .guessdiv {
     font-family: monospace;
+    margin-top: 100px;
+
 }
