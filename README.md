@@ -8,7 +8,7 @@ The game uses Merriam-Webster Dictionary API and a txt-list of ~6000 most common
 
 Hints are letters of the word. You can buy as many hints as you have points to. Currently each letter cost -10 points.
 Audio hints cost -50 points. Game will look audio from the definition loaded. Not all words has audio available, and this must be checked in the game (not implemented yet).
-Audio makes guessing the words a bit too easy, but the price is high compared to points received from guessing word right (+40 p).
+Audio makes guessing the words a bit too easy, but the price is high compared to points received from guessing word right (+40 p). Audio is added mainly just for fun :)
 
 ### Play the game
 http://www.jossu.net/guess
