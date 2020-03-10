@@ -17,12 +17,14 @@ Hints are letters of the word. You can buy as many hints as you have points to. 
 Audio hints cost -50 points. Game will look audio from the definition loaded. Not all words has audio available, and this must be checked in the game (not implemented yet).
 Audio makes guessing the words a bit too easy, but the price is high compared to points received from guessing word right (+40 p). Audio is added mainly just for fun :)
 
+Reading highscore list was easy with ajax, but writing was a problem - as I understood - due to safety reasons. That is where a little php-file came to help. Highscore is being saved with ajax function which calls textwriter.php.
+
 ### Play the game
 http://www.jossu.net/guess
 
 ### Further development ideas
 - Include different API for drawing random word
-  - Currently i was unable to find free way to draw a random word to be used in loading the definition. Most APIs require to search items by word and not by random.
+  - Currently I was unable to find free way to draw a random word to be used in loading the definition. Most APIs require to search items by word and not by random.
   
 - Check if audio file is available
   - By default game is offering to buy audio hint fo every word. It is not checking whether there is one available from the API. Therefore player can buy empty audio hint and lose -50 points.
