@@ -1,4 +1,4 @@
-# guesstheword
+# Guess the Word
 **Game gives definition of words and player has to guess the word in question.**
 Player is able to buy hints with points (letters and audio) and is given 3 chances to guess each word. The game ends when player has lost all points. Player can also save his/her name and score if new highscore is reached, but it will restart the game.
 
