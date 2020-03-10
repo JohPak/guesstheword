@@ -11,7 +11,6 @@ Audio hints cost -50 points. Game will look audio from the definition loaded. No
 Audio makes guessing the words a bit too easy, but the price is high compared to points received from guessing word right (+40 p).
 
 
----
 
 # Further development ideas
 Include different API for drawing random word
