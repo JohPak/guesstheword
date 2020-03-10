@@ -2,7 +2,7 @@
 Game gives definition of words and player has to guess the word in question.
 Player is able to buy hints with points (letters and audio) and is given 3 chances to guess each word. The game ends when player has lost all points. Player can also save his/her name and score if new highscore is reached, but this will restart the game.
 
-----
+---
 
 The game uses Merriam-Webster Dictionary API and a txt-list of ~6000 most common english nouns. Each word is drawn randomly from the list and then definition is loaded from the API.
 
@@ -12,6 +12,12 @@ Audio makes guessing the words a bit too easy, but the price is high compared to
 
 
 
-# Further development ideas
-Include different API for drawing random word
-- Currently i was unable to find free way to draw a random word to be used in loading the definition. Most APIs require to search items by word and not by random.
+### Further development ideas
+- Include different API for drawing random word
+  - Currently i was unable to find free way to draw a random word to be used in loading the definition. Most APIs require to search items by word and not by random.
+
+- Make game responsive
+  - Game shows correctly only on desktop (perhaps tablet too?)
+  
+- Use Singel File Components
+  - Now almost everything is in the same index file
