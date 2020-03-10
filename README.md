@@ -20,5 +20,6 @@ http://www.jossu.net/guess
 - Make game responsive
   - Game shows correctly only on desktop (perhaps tablet too?)
   
-- Use Singel File Components
-  - Now almost everything is in the same index file
+- Use Single File Components, templating etc
+  - It's getting harder to read because almost everything is in the same index file
+  - I have not used templates
