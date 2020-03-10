@@ -18,7 +18,7 @@ http://www.jossu.net/guess
   - Currently i was unable to find free way to draw a random word to be used in loading the definition. Most APIs require to search items by word and not by random.
   
 - Check if audio file is available
-  - By default game is offering to buy audio hit fo every word. It is not checking whether there is one available from the API.
+  - By default game is offering to buy audio hint fo every word. It is not checking whether there is one available from the API. Therefore player can buy empty audio hint and lose -50 points.
 
 - Make game responsive
   - Game shows correctly only on desktop (perhaps tablet too?)
