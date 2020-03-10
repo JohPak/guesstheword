@@ -10,7 +10,8 @@ Hints are letters of the word. You can buy as many hints as you have points to. 
 Audio hints cost -50 points. Game will look audio from the definition loaded. Not all words has audio available, and this must be checked in the game (not implemented yet).
 Audio makes guessing the words a bit too easy, but the price is high compared to points received from guessing word right (+40 p).
 
-
+### Play the game
+http://www.jossu.net/guess
 
 ### Further development ideas
 - Include different API for drawing random word
