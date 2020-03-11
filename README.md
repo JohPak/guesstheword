@@ -9,7 +9,7 @@ Guess the Word | Guess the Word | Guess the Word
 
 
 
-## What is does?
+## What it does?
 
 The game uses Merriam-Webster Dictionary API and a txt-list of ~6000 most common english nouns. Each word is drawn randomly from the list and then definition is loaded from the API.
 
